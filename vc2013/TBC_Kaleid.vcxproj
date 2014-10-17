@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -49,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\lib\cinder_0.8.6_vc2013\include";"..\..\..\lib\cinder_0.8.6_vc2013\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(CINDER_ROOT)\include;$(CINDER_ROOT)\boost;$(DSROOT)\Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\lib\cinder_0.8.6_vc2013\include";"..\..\..\lib\cinder_0.8.6_vc2013\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(CINDER_ROOT)\include;$(CINDER_ROOT)\boost;$(DSROOT)\Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -106,10 +107,16 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Globe.cpp" />
     <ClCompile Include="..\src\TBC_KaleidApp.cpp" />
+    <ClCompile Include="..\src\Three.cpp" />
+    <ClCompile Include="..\src\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Globe.h" />
     <ClInclude Include="..\include\Resources.h" />
+    <ClInclude Include="..\include\Three.h" />
+    <ClInclude Include="..\include\Zoom.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

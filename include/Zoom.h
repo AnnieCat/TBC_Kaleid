@@ -28,6 +28,8 @@ public:
 private:
 	Rectf mUpper;
 	Rectf mLower;
+
+	float mStartDepth;
 };
 
 class ZoomControl

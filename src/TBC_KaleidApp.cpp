@@ -31,9 +31,6 @@ private:
 	KaleidMode mMode;
 	CameraRef mCamera;
 	ZoomControlRef mZoomControl;
-
-	//TEST
-	float mDepth;
 };
 
 void TBC_KaleidApp::prepareSettings(Settings *pSettings)
@@ -49,9 +46,8 @@ void TBC_KaleidApp::setup()
 	mCamera = make_unique<CameraPersp>();
 	mCamera->setPerspective(60.f, getWindowAspectRatio(), 0.1f, 1000.0f);
 	mCamera->lookAt(Vec3f::zero(), Vec3f(0, 0, 1000));
-	mDepth = 1000;
 
-	mZoomControl = make_unique<ZoomControl>(200, 3);
+	mZoomControl = make_unique<ZoomControl>();
 }
 
 void TBC_KaleidApp::keyDown(KeyEvent pEvent)
@@ -83,10 +79,6 @@ void TBC_KaleidApp::mouseDown( MouseEvent event )
 
 void TBC_KaleidApp::update()
 {
-	mDepth-=10;
-	if (mDepth <= 0)
-		mDepth = 1000;
-
 	switch (mMode)
 	{
 		case KaleidMode::KM_ZOOM:
@@ -110,6 +102,7 @@ void TBC_KaleidApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::enableAlphaBlending();
 	gl::setMatrices(*mCamera);
 
 	switch (mMode)
@@ -128,6 +121,7 @@ void TBC_KaleidApp::draw()
 			break;
 		}
 	}
+	gl::disableAlphaBlending();
 }
 
 CINDER_APP_NATIVE( TBC_KaleidApp, RendererGl )

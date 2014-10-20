@@ -1,16 +1,19 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/audio/Context.h"
 #include "cinder/Camera.h"
+#include "cinder/CinderMath.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
-#include "cinder/audio/Context.h"
+#include "cinder/ImageIo.h"
 
 #include "Zoom.h"
+#include "Three.h"
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-typedef std::unique_ptr<CameraPersp> CameraRef;
+typedef std::unique_ptr<CameraPersp> CameraPtr;
 
 class TBC_KaleidApp : public AppNative {
 public:
@@ -28,9 +31,12 @@ public:
 	};
 
 private:
+	gl::Texture DepthFeed;
 	KaleidMode mMode;
-	CameraRef mCamera;
-	ZoomControlRef mZoomControl;
+	CameraPtr mCamera;
+	ZoomControlPtr mZoomControl;
+	ThreeControlPtr mThreeControl;
+
 };
 
 void TBC_KaleidApp::prepareSettings(Settings *pSettings)
@@ -42,12 +48,16 @@ void TBC_KaleidApp::prepareSettings(Settings *pSettings)
 
 void TBC_KaleidApp::setup()
 {
-	mMode = KM_ZOOM;
+	DepthFeed = gl::Texture(loadImage(loadAsset("capture.png")));
+
+	mMode = KM_THREE;
 	mCamera = make_unique<CameraPersp>();
 	mCamera->setPerspective(60.f, getWindowAspectRatio(), 0.1f, 1000.0f);
 	mCamera->lookAt(Vec3f::zero(), Vec3f(0, 0, 1000));
 
-	mZoomControl = make_unique<ZoomControl>();
+	mZoomControl = make_unique<ZoomControl>(200.0f,3,DepthFeed);
+	mThreeControl = make_unique<ThreeControl>(DepthFeed);
+
 }
 
 void TBC_KaleidApp::keyDown(KeyEvent pEvent)
@@ -63,11 +73,21 @@ void TBC_KaleidApp::keyDown(KeyEvent pEvent)
 		case '3':
 		{
 			//go back
+			int cMode = (int)mMode;
+			cMode--;
+			if (cMode < 0)
+				cMode = 2;
+			mMode = (KaleidMode)cMode;
 			break;
 		}
 		case '5':
 		{
 			//go forward
+			int cMode = (int)mMode;
+			cMode++;
+			if (cMode > 2)
+				cMode = 0;
+			mMode = (KaleidMode)cMode;
 			break;
 		}
 	}
@@ -88,7 +108,7 @@ void TBC_KaleidApp::update()
 		}
 		case KaleidMode::KM_THREE:
 		{
-
+			mThreeControl->step();
 			break;
 		}
 		case KaleidMode::KM_GLOBE:
@@ -114,10 +134,13 @@ void TBC_KaleidApp::draw()
 		}
 		case KaleidMode::KM_THREE:
 		{
+			mThreeControl->display();
 			break;
 		}
 		case KaleidMode::KM_GLOBE:
 		{
+			gl::color(Color::white());
+			gl::drawSphere(Vec3f(0,0,300), 10);
 			break;
 		}
 	}

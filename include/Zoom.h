@@ -14,7 +14,7 @@ class ZoomPlate
 {
 public:
 	ZoomPlate();
-	ZoomPlate(const float &pStartDepth);
+	ZoomPlate(const float &pStartDepth, const gl::Texture &pTexture);
 	~ZoomPlate();
 
 	void step();
@@ -23,7 +23,7 @@ public:
 	bool IsDead;
 	float CurrentDepth;
 	gl::GlslProg PlateShader;
-	gl::Texture PlateTexture;
+	gl::Texture DepthFeed;
 
 private:
 	Rectf mUpper;
@@ -36,7 +36,7 @@ class ZoomControl
 {
 public:
 	ZoomControl();
-	ZoomControl(const float &pTriggerDepth, const int &pNumPlates);
+	ZoomControl(const float &pTriggerDepth, const int &pNumPlates, const gl::Texture &pTexture);
 	~ZoomControl();
 
 	void step();
@@ -46,7 +46,8 @@ public:
 	int NumPlates;
 private:
 	vector<ZoomPlate> mPlates;
+	gl::Texture mDepthFeed;
 };
 
-typedef std::unique_ptr<ZoomControl> ZoomControlRef;
+typedef std::unique_ptr<ZoomControl> ZoomControlPtr;
 #endif

@@ -1,3 +1,8 @@
+#ifdef _DEBUG
+#pragma comment(lib, "DSAPI32.dbg.lib")
+#else
+#pragma comment(lib, "DSAPI32.lib")
+#endif
 #include "cinder/app/AppNative.h"
 #include "cinder/audio/Context.h"
 #include "cinder/Camera.h"
@@ -9,6 +14,11 @@
 
 #include "Zoom.h"
 #include "Three.h"
+#include "Globe.h"
+#include "Wavey.h"
+#include "DSAPI.h"
+#include "DSAPIUtil.h"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -18,6 +28,7 @@ typedef std::unique_ptr<CameraPersp> CameraPtr;
 class TBC_KaleidApp : public AppNative {
 public:
 	void prepareSettings(Settings *pSettings);
+	void initDS4();
 	void setup();
 	void mouseDown( MouseEvent event );
 	void keyDown(KeyEvent pEvent);
@@ -40,6 +51,8 @@ private:
 	ZoomControlPtr mZoomControl;
 	ThreeControlPtr mThreeControl;
 
+	DSAPI *mDS4;
+	uint16_t *mDepth;
 };
 
 void TBC_KaleidApp::prepareSettings(Settings *pSettings)
@@ -49,10 +62,50 @@ void TBC_KaleidApp::prepareSettings(Settings *pSettings)
 	pSettings->setFrameRate(30.0f);
 }
 
+void TBC_KaleidApp::initDS4()
+{
+	mDS4 = DSCreate(DS_DS4_PLATFORM);
+    DSHardware *mHardware = mDS4->accessHardware();
+
+	if (!mDS4->probeConfiguration())
+	{
+		console() << "Unable to access DS4 Config" << endl;
+		quit();
+	}
+
+    if (!mDS4->isCalibrationValid())
+    {
+        console() << "Calibration data on camera is invalid" << endl;
+		quit();
+    }
+
+	if (mDS4->enableZ(true))
+	{
+		if (!mDS4->setLRZResolutionMode(true, 480, 360, 60, DS_LUMINANCE8))
+		{
+			console() << "Unable to set desired depth resolution" << endl;
+			quit();
+		}
+		mDS4->enableLRCrop(true);
+
+	}
+	else
+	{
+		console() << "Unable to start depth streaming" << endl;
+		quit();
+	}
+
+	if (!mDS4->startCapture())
+	{
+		console() << "Unable to start DS4, exiting" << endl;
+		quit();
+	}
+}
+
 void TBC_KaleidApp::setup()
 {
-	DepthFeed = gl::Texture(loadImage(loadAsset("capture.png")));
-
+	//DepthFeed = gl::Texture(loadImage(loadAsset("capture.png")));
+	DepthFeed = gl::Texture(480, 360);
 	mMode = KM_THREE;
 	mCamera = make_unique<CameraPersp>();
 	mCamera->setPerspective(60.f, getWindowAspectRatio(), 0.1f, 1000.0f);
@@ -61,6 +114,7 @@ void TBC_KaleidApp::setup()
 	mZoomControl = make_unique<ZoomControl>(200.0f,3,DepthFeed);
 	mThreeControl = make_unique<ThreeControl>(DepthFeed);
 
+	initDS4();
 }
 
 void TBC_KaleidApp::keyDown(KeyEvent pEvent)

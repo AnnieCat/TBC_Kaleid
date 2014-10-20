@@ -110,12 +110,14 @@
     <ClCompile Include="..\src\Globe.cpp" />
     <ClCompile Include="..\src\TBC_KaleidApp.cpp" />
     <ClCompile Include="..\src\Three.cpp" />
+    <ClCompile Include="..\src\Wavey.cpp" />
     <ClCompile Include="..\src\Zoom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Globe.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\include\Three.h" />
+    <ClInclude Include="..\include\Wavey.h" />
     <ClInclude Include="..\include\Zoom.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -27,7 +27,10 @@ public:
 
 	enum KaleidMode
 	{
-		KM_ZOOM, KM_THREE, KM_GLOBE
+		KM_ZOOM,
+		KM_THREE,
+		KM_GLOBE,
+		KM_WAVE
 	};
 
 private:
@@ -115,6 +118,10 @@ void TBC_KaleidApp::update()
 		{
 			break;
 		}
+		case KaleidMode::KM_WAVE:
+		{
+			break;
+		}
 	}
 }
 
@@ -123,24 +130,32 @@ void TBC_KaleidApp::draw()
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
 	gl::enableAlphaBlending();
-	gl::setMatrices(*mCamera);
+
 
 	switch (mMode)
 	{
 		case KaleidMode::KM_ZOOM:
 		{
+			gl::setMatrices(*mCamera);
 			mZoomControl->display();
 			break;
 		}
 		case KaleidMode::KM_THREE:
 		{
+			gl::setMatrices(*mCamera);
 			mThreeControl->display();
 			break;
 		}
 		case KaleidMode::KM_GLOBE:
 		{
+			gl::setMatrices(*mCamera);
 			gl::color(Color::white());
 			gl::drawSphere(Vec3f(0,0,300), 10);
+			break;
+		}
+		case KaleidMode::KM_WAVE:
+		{
+			gl::setMatricesWindow(getWindowSize());
 			break;
 		}
 	}
